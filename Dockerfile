@@ -5,7 +5,7 @@ WORKDIR /
 COPY . .
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /golang-truewallet-api
+RUN go build -o /golang-truewallet-api
 
 EXPOSE 1500
 
