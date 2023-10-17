@@ -13,10 +13,6 @@ import (
 
 type RedemptionService struct{}
 
-func NewRedemptionService() RedemptionHandler {
-	return &RedemptionService{}
-}
-
 func (rs *RedemptionService) RedeemCode(c *fiber.Ctx, code string, phoneNumber string) error {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: false,
