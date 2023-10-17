@@ -1,5 +1,7 @@
 FROM golang:latest
 
+ENV TZ="Asia/Bangkok"
+
 WORKDIR /
 
 COPY . .
