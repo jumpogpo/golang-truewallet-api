@@ -4,16 +4,16 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
-	"os"
 	"net/http"
+	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
-func redeemCode(c *gin.Context, code string, phoneNumber string) {
+func redeemCode(c *fiber.Ctx, code string, phoneNumber string) {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: false,
 	}
@@ -38,14 +38,18 @@ func redeemCode(c *gin.Context, code string, phoneNumber string) {
 	req.Header.Add("Content-Type", "application/json")
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	res, err := client.Do(req)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -54,11 +58,13 @@ func redeemCode(c *gin.Context, code string, phoneNumber string) {
 	body, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 		return
 	}
 
-	c.Data(res.StatusCode, "application/json", body)
+	c.Status(res.StatusCode).Send(body)
 }
 
 func main() {
@@ -69,22 +75,22 @@ func main() {
 		port = os.Getenv("PORT")
 	}
 
-	router := gin.Default()
+	router := fiber.New()
 
-	router.POST("/redeem/:code", func(c *gin.Context) {
-		code := c.Param("code")
+    router.Post("/redeem/:code", func(c *fiber.Ctx) error {
+        code := c.Params("code")
 
         var requestBody struct {
             MobilePhone string `json:"mobile"`
         }
 
-		if err := c.BindJSON(&requestBody); err != nil {
-            c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-            return
+        if err := c.BodyParser(&requestBody); err != nil {
+            c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
         }
 
-		redeemCode(c, code, requestBody.MobilePhone)
-	})
+        redeemCode(c, code, requestBody.MobilePhone)
+		return nil
+    })
 
-	router.Run(fmt.Sprintf(":%s", port))
+	router.Listen(fmt.Sprintf(":%s", port))
 }
