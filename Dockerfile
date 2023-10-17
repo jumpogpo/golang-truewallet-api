@@ -2,8 +2,6 @@ FROM golang:alpine3.18
 
 WORKDIR /
 
-ENV GIN_MODE=release
-
 COPY . .
 RUN go mod download
 
