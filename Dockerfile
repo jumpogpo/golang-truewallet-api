@@ -1,10 +1,8 @@
-FROM golang:alpine3.18
+FROM golang:latest
 
 WORKDIR /
 
 COPY . .
-
-RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
 RUN go mod download
 
