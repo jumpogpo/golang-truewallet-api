@@ -8,9 +8,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func redeemCode(c *fiber.Ctx, code string, phoneNumber string) {
@@ -76,6 +77,12 @@ func main() {
 	}
 
 	router := fiber.New()
+	
+	router.Use(logger.New(logger.Config{
+		Format: "${TagGreen} ${time} [${ip}:${port}] ${latency} ${status} - ${method} ${path} ${body} \n",
+		TimeFormat: "02/01/2006 15:04:05",
+		TimeZone: "Local",
+	}))
 
     router.Post("/redeem/:code", func(c *fiber.Ctx) error {
         code := c.Params("code")
