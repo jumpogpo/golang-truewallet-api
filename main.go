@@ -86,5 +86,5 @@ func main() {
 		redeemCode(c, code, requestBody.MobilePhone)
 	})
 
-	router.Run(":" + port)
+	router.Run(fmt.Sprintf(":%s", port))
 }
