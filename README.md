@@ -38,7 +38,7 @@ $ go build .
 ```
 
 ## ▶️ How to use
-- Method: Post
+- Method: `Post`
 - Url: `http://localhost:{port}/redeem/{angpao_code}`
 - Body:
 ```json
